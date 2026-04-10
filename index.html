@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot H&S · Higiene y Seguridad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;background:#0d1117;color:#e6edf3;font-size:14px}
+
+/* ─── LAYOUT ────────────────────────────────────────────────────── */
+.shell{display:flex;height:100vh;overflow:hidden}
+
+/* ─── SIDEBAR ───────────────────────────────────────────────────── */
+.sidebar{width:240px;background:#161b22;border-right:1px solid #21262d;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;transition:transform .25s}
+.sb-logo{padding:18px 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #21262d}
+.sb-shield{width:32px;height:32px;border-radius:8px;background:#1c6ef3;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-brand{font-size:13px;font-weight:600;color:#e6edf3;letter-spacing:-.2px}
+.sb-brand-sub{font-size:10px;color:#7d8590;margin-top:1px;font-family:'IBM Plex Mono',monospace}
+
+.sb-sec{padding:14px 16px 6px;font-size:10px;font-weight:600;color:#7d8590;text-transform:uppercase;letter-spacing:.8px}
+.sb-item{padding:7px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;color:#8b949e;font-size:13px;border-left:2px solid transparent;transition:all .12s;line-height:1.3}
+.sb-item:hover{color:#e6edf3;background:#1c2128}
+.sb-item.on{color:#58a6ff;border-left-color:#1c6ef3;background:#1c2128;font-weight:500}
+.sb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.d-blue{background:#1c6ef3}.d-red{background:#f85149}.d-green{background:#3fb950}
+.d-amber{background:#e3b341}.d-purple{background:#a371f7}.d-teal{background:#39d353}
+
+/* ROLE SELECTOR */
+.role-wrap{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.role-label{font-size:10px;font-weight:600;color:#7d8590;text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px}
+.role-btn{padding:8px 12px;border-radius:7px;border:1px solid #30363d;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;background:transparent;width:100%;text-align:left}
+.role-btn:hover{border-color:#58a6ff;background:#1c2128}
+.role-btn.on{border-color:var(--rc);background:var(--rb)}
+.rb-icon{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.rb-name{font-size:12px;font-weight:500;color:#e6edf3}
+.rb-sub{font-size:10px;color:#7d8590;margin-top:1px}
+
+/* SOURCES */
+.sources{margin:0 12px 8px;padding:10px 12px;background:#0d1117;border:1px solid #21262d;border-radius:8px}
+.src-title{font-size:10px;font-weight:600;color:#7d8590;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.src-row{display:flex;align-items:center;gap:7px;padding:3px 0;font-size:11px;color:#8b949e}
+.src-icon{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;color:#fff}
+.si-d{background:#238636}.si-s{background:#1c6ef3}.si-b{background:#a371f7}
+.src-tag{margin-left:auto;font-size:10px;border-radius:20px;padding:1px 7px;font-weight:500}
+.t-ok{background:#0d4429;color:#3fb950;border:1px solid #238636}
+.t-pend{background:#272115;color:#e3b341;border:1px solid #9e6a03}
+
+.wa-btn{margin:0 12px 14px;padding:8px 12px;background:#0d2818;border:1px solid #238636;border-radius:7px;color:#3fb950;font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.wa-btn:hover{background:#122519}
+.wa-icon{font-size:13px}
+
+/* ─── MAIN CHAT ─────────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0d1117;min-width:0}
+
+/* TOP BAR */
+.topbar{padding:0 20px;height:56px;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#161b22}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-status{display:flex;align-items:center;gap:5px}
+.online-dot{width:7px;height:7px;border-radius:50%;background:#3fb950;box-shadow:0 0 6px #3fb95066;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.tb-title{font-size:14px;font-weight:600;color:#e6edf3}
+.tb-role-chip{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;margin-left:4px}
+.tb-right{display:flex;gap:8px;align-items:center}
+.tb-btn{padding:5px 12px;border-radius:6px;border:1px solid #30363d;background:transparent;color:#8b949e;font-size:12px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all .15s}
+.tb-btn:hover{border-color:#58a6ff;color:#e6edf3}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px}
+.hamburger span{width:18px;height:2px;background:#8b949e;border-radius:2px;transition:all .2s}
+
+/* MESSAGES */
+.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.messages::-webkit-scrollbar{width:4px}
+.messages::-webkit-scrollbar-thumb{background:#21262d;border-radius:4px}
+
+.msg{display:flex;gap:10px;align-items:flex-start;max-width:85%;animation:fadeUp .2s ease-out}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.m-av{width:28px;height:28px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.av-bot{background:#1c2951;color:#58a6ff;border:1px solid #1c6ef355}
+.m-bub{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6;border:1px solid;word-break:break-word}
+.bub-bot{background:#161b22;border-color:#21262d;color:#c9d1d9;border-radius:2px 10px 10px 10px}
+.bub-user{border-radius:10px 2px 10px 10px}
+.m-time{font-size:10px;color:#7d8590;margin-top:4px;font-family:'IBM Plex Mono',monospace}
+.m-time.right{text-align:right}
+
+/* TYPING */
+.typing-bub{padding:12px 16px}
+.td{width:6px;height:6px;border-radius:50%;background:#7d8590;display:inline-block;margin:0 2px;animation:bop 1s infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes bop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+/* CHIPS */
+.chips-wrap{padding:0 20px 12px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:5px 11px;border:1px solid #21262d;border-radius:20px;cursor:pointer;color:#8b949e;background:#161b22;transition:all .12s;white-space:nowrap;font-family:'IBM Plex Sans',sans-serif}
+.chip:hover{border-color:#1c6ef3;color:#58a6ff;background:#1c2128}
+
+/* INPUT */
+.input-wrap{padding:12px 20px 16px;border-top:1px solid #21262d;background:#161b22}
+.input-row{display:flex;gap:8px;align-items:flex-end}
+.input-row textarea{flex:1;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-family:'IBM Plex Sans',sans-serif;font-size:13px;padding:10px 14px;resize:none;height:42px;max-height:120px;outline:none;transition:border .15s;line-height:1.5}
+.input-row textarea::placeholder{color:#7d8590}
+.input-row textarea:focus{border-color:#1c6ef3}
+.send-btn{width:42px;height:42px;border-radius:8px;border:1px solid #1c6ef3;background:#1c2951;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.send-btn:hover{background:#1c6ef3}
+.send-btn svg{width:16px;height:16px;stroke:#58a6ff}
+.send-btn:hover svg{stroke:#fff}
+.input-hint{font-size:11px;color:#7d8590;margin-top:6px;text-align:center;font-family:'IBM Plex Mono',monospace}
+
+/* ─── MODAL ─────────────────────────────────────────────────────── */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px)}
+.modal{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;width:400px;max-width:94vw;max-height:90vh;overflow-y:auto;animation:fadeUp .2s}
+.modal h2{font-size:16px;font-weight:600;color:#e6edf3;margin-bottom:4px}
+.modal-sub{font-size:12px;color:#7d8590;margin-bottom:18px;line-height:1.6}
+.f-label{font-size:11px;font-weight:600;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;margin-top:14px}
+.modal input{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e6edf3;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 10px;outline:none;transition:border .15s}
+.modal input:focus{border-color:#1c6ef3}
+.modal input::placeholder{color:#7d8590}
+.modal-note{margin-top:14px;padding:10px 12px;background:#0d1117;border:1px solid #21262d;border-radius:6px;font-size:11px;color:#8b949e;line-height:1.7}
+.modal-note span{color:#3fb950}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.btn-cancel{padding:7px 16px;border:1px solid #30363d;border-radius:6px;background:transparent;color:#8b949e;cursor:pointer;font-size:13px;font-family:'IBM Plex Sans',sans-serif}
+.btn-cancel:hover{border-color:#58a6ff;color:#e6edf3}
+.btn-save{padding:7px 18px;border:1px solid #1c6ef3;border-radius:6px;background:#1c2951;color:#58a6ff;cursor:pointer;font-size:13px;font-weight:500;font-family:'IBM Plex Sans',sans-serif;transition:all .15s}
+.btn-save:hover{background:#1c6ef3;color:#fff}
+
+/* WELCOME */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 20px;text-align:center;gap:16px}
+.w-shield{font-size:48px;margin-bottom:8px;display:block}
+.w-title{font-size:22px;font-weight:600;color:#e6edf3;letter-spacing:-.5px}
+.w-sub{font-size:13px;color:#7d8590;max-width:340px;line-height:1.7}
+.w-caps{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.w-cap{font-size:11px;padding:4px 11px;border:1px solid #21262d;border-radius:20px;color:#8b949e;background:#161b22}
+
+/* RESPONSIVE */
+@media(max-width:680px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .hamburger{display:flex}
+  .tb-title{font-size:13px}
+  .modal{padding:18px}
+  .messages{padding:14px}
+  .chips-wrap{padding:0 14px 10px}
+  .input-wrap{padding:10px 14px 14px}
+  .msg{max-width:94%}
+}
+@media(max-width:400px){
+  .sidebar{width:220px}
+  .role-btn .rb-sub{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ── SIDEBAR ── -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-shield">⛑</div>
+      <div>
+        <div class="sb-brand">Bot H&S</div>
+        <div class="sb-brand-sub">v1.0 · Federación Patronal ART</div>
+      </div>
+    </div>
+
+    <div class="role-wrap">
+      <div class="role-label">Perfil de usuario</div>
+      <button class="role-btn on" id="btn-g" onclick="setRole('g')" style="--rc:#1c6ef3;--rb:#1c2951">
+        <div class="rb-icon" style="background:#1c2951;color:#58a6ff">G</div>
+        <div><div class="rb-name">Gerente</div><div class="rb-sub">Estratégico / legal</div></div>
+      </button>
+      <button class="role-btn" id="btn-r" onclick="setRole('r')" style="--rc:#238636;--rb:#0d2818">
+        <div class="rb-icon" style="background:#0d2818;color:#3fb950">R</div>
+        <div><div class="rb-name">Responsable</div><div class="rb-sub">Coordinador H&S</div></div>
+      </button>
+      <button class="role-btn" id="btn-c" onclick="setRole('c')" style="--rc:#a371f7;--rb:#1e1130">
+        <div class="rb-icon" style="background:#1e1130;color:#a371f7">C</div>
+        <div><div class="rb-name">Colaborador</div><div class="rb-sub">Trabajador / operario</div></div>
+      </button>
+    </div>
+
+    <div class="sb-sec">Temas</div>
+    <div class="sb-item on" onclick="setTopic(this,'general')"><span class="sb-dot d-blue"></span>Consulta general</div>
+    <div class="sb-item" onclick="setTopic(this,'accidente')"><span class="sb-dot d-red"></span>Accidentes y ILT</div>
+    <div class="sb-item" onclick="setTopic(this,'reintegro')"><span class="sb-dot d-blue"></span>Reintegro SELF</div>
+    <div class="sb-item" onclick="setTopic(this,'epp')"><span class="sb-dot d-amber"></span>EPP y protección</div>
+    <div class="sb-item" onclick="setTopic(this,'inspeccion')"><span class="sb-dot d-blue"></span>Inspecciones</div>
+    <div class="sb-item" onclick="setTopic(this,'capacitacion')"><span class="sb-dot d-green"></span>Capacitaciones</div>
+    <div class="sb-item" onclick="setTopic(this,'nte')"><span class="sb-dot d-teal"></span>NTE / Exámenes</div>
+    <div class="sb-item" onclick="setTopic(this,'indicadores')"><span class="sb-dot d-purple"></span>Indicadores H&S</div>
+    <div class="sb-item" onclick="setTopic(this,'legal')"><span class="sb-dot d-amber"></span>Normativa legal</div>
+    <div class="sb-item" onclick="setTopic(this,'glosario')"><span class="sb-dot d-purple"></span>Glosario</div>
+
+    <div class="sb-sec" style="margin-top:8px">Fuentes conectadas</div>
+    <div class="sources">
+      <div class="src-row"><span class="src-icon si-d">D</span>Google Drive<span id="tag-drive" class="src-tag t-pend">pendiente</span></div>
+      <div class="src-row"><span class="src-icon si-s">S</span>Google Sheets<span id="tag-sheet" class="src-tag t-pend">pendiente</span></div>
+      <div class="src-row"><span class="src-icon si-b">B</span>Base interna H&S<span class="src-tag t-ok">activa</span></div>
+    </div>
+
+    <div class="wa-btn" onclick="shareWA()">
+      <span class="wa-icon">📱</span>Compartir por WhatsApp
+    </div>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="tb-left">
+        <div class="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></div>
+        <div class="tb-status">
+          <div class="online-dot"></div>
+          <span class="tb-title">Bot H&S</span>
+          <span class="tb-role-chip" id="role-chip" style="background:#1c2951;color:#58a6ff">Gerente</span>
+        </div>
+      </div>
+      <div class="tb-right">
+        <button class="tb-btn" onclick="clearChat()">Limpiar chat</button>
+        <button class="tb-btn" onclick="showModal()" style="border-color:#1c6ef355;color:#58a6ff">⚙ Config</button>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <span class="w-shield">⛑</span>
+        <div class="w-title">Bot de Higiene y Seguridad</div>
+        <div class="w-sub">Consultas sobre normativa, accidentes, EPP, reintegros ILT y gestión de H&S para tu empresa industrial.</div>
+        <div class="w-caps">
+          <span class="w-cap">Ley 19.587</span>
+          <span class="w-cap">Ley 24.557</span>
+          <span class="w-cap">Dec. 351/79</span>
+          <span class="w-cap">Federación Patronal ART</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHIPS -->
+    <div class="chips-wrap" id="chips"></div>
+
+    <!-- INPUT -->
+    <div class="input-wrap">
+      <div class="input-row">
+        <textarea id="inp" placeholder="Escribí tu consulta de H&S..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" onclick="doSend()">
+          <svg viewBox="0 0 16 16" fill="none" stroke-width="1.8"><path d="M2 8h12M10 4l4 4-4 4"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">Enter para enviar · Shift+Enter para nueva línea</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL CONFIG ── -->
+<div class="modal-ov" id="modal" style="display:none" onclick="overlayClose(event)">
+  <div class="modal" onclick="e=>e.stopPropagation()">
+    <h2>⚙ Configuración de fuentes</h2>
+    <div class="modal-sub">Conectá el bot con la IA de Claude y tus documentos en Google para respuestas en tiempo real y actualizadas.</div>
+
+    <label class="f-label">API Key de Anthropic <span style="color:#7d8590;text-transform:none;font-weight:400;font-size:11px">— para IA en tiempo real</span></label>
+    <input type="password" id="cf-api" placeholder="sk-ant-api03-...">
+
+    <label class="f-label">ID de carpeta Google Drive <span style="color:#7d8590;text-transform:none;font-weight:400;font-size:11px">— documentos H&S subidos</span></label>
+    <input type="text" id="cf-drive" placeholder="1BxiMVs0XRA5nFMdKvBdBZjg...">
+
+    <label class="f-label">ID de Google Sheet <span style="color:#7d8590;text-transform:none;font-weight:400;font-size:11px">— base Q&A actualizable</span></label>
+    <input type="text" id="cf-sheet" placeholder="1BxiMVs0XRA5nFMdKvBdBZjg...">
+
+    <label class="f-label">API Key de Google <span style="color:#7d8590;text-transform:none;font-weight:400;font-size:11px">— para leer Drive y Sheets</span></label>
+    <input type="text" id="cf-gkey" placeholder="AIzaSy...">
+
+    <div class="modal-note">
+      <span>Sin claves:</span> el bot usa la base interna de H&S (siempre disponible).<br>
+      <span>+ API Key Anthropic:</span> respuestas con IA adaptadas al perfil en tiempo real.<br>
+      <span>+ IDs Drive/Sheets:</span> el bot referencia tu documentación actualizada.<br><br>
+      <span style="color:#e3b341">Importante:</span> las claves se guardan solo en tu navegador (localStorage), no se envían a ningún servidor externo.
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveConfig()">Guardar y conectar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   CONFIGURACIÓN DE ROLES
+═══════════════════════════════════════════════════════════════════ */
+const ROLES = {
+  g: {
+    id:'g', label:'Gerente', short:'G',
+    chip_bg:'#1c2951', chip_color:'#58a6ff',
+    bub_bg:'#1c2128', bub_color:'#cae8ff', bub_border:'#1c6ef355',
+    av_bg:'#1c2951', av_color:'#58a6ff',
+    system:`Sos un asesor experto en Higiene y Seguridad en el Trabajo para empresas industriales argentinas. Estás respondiendo a un GERENTE o directivo. Tu enfoque es estratégico, legal y de gestión.
+
+Brindá información sobre:
+- Responsabilidad legal del empleador (Ley 24.557, Ley 19.587, Decreto 351/79)
+- Impacto económico de la siniestralidad y alícuotas ART
+- Indicadores de gestión: IF (Índice de Frecuencia), IG (Índice de Gravedad), IA (Índice de Incidencia)
+- Obligaciones documentales ante la SRT y la ART
+- Sanciones por incumplimiento (Art. 5, Art. 32 LRT)
+- Gestión del Sistema de H&S y el Programa Anual
+
+ART contratada: Federación Patronal Seguros S.A.
+- Emergencias: 0-800-222-2322 (24hs)
+- Portal SELF: www.fedpat.com.ar → Portal ART
+- Consultas/Reclamos: 0800-222-3535 (lun-vie 8:30-17:00)
+
+SRT: 0-800-666-6778 · www.srt.gob.ar
+
+Respondé siempre en español rioplatense. Usá lenguaje profesional ejecutivo. Citá artículos legales cuando sean relevantes. Sé conciso y orientado a decisiones. Si la respuesta tiene pasos o listas, formateala claramente.`,
+    chips: {
+      general:['¿Cuál es la responsabilidad legal del empleador?','¿Qué sanciones prevé el Art. 32 de la LRT?','¿Qué documentación exige la SRT en una inspección?','¿Cómo impacta la siniestralidad en la alícuota?','¿Qué es una empresa crítica para la SRT?'],
+      accidente:['¿Cuál es la responsabilidad ante un accidente grave?','¿Qué es el recargo por incumplimiento (Art. 5)?','¿Cuándo puede haber responsabilidad civil del empleador?','¿Qué diferencia hay entre ILT e ILP?','¿Qué es la gran invalidez?'],
+      reintegro:['¿Cuánto recupera la empresa por reintegro ILT?','¿Cómo afecta la siniestralidad a la renovación de póliza?','¿En qué plazo acredita la ART el reintegro?','¿Qué hacer si la ART rechaza el reintegro injustificadamente?','Informe de reintegros ILT en Excel (portal SELF)'],
+      epp:['¿Quién es legalmente responsable de proveer EPP?','¿Qué pasa si el trabajador no usa el EPP y hay un accidente?','EPP obligatorio en manufactura por Decreto 351/79'],
+      inspeccion:['¿Con qué frecuencia debe visitar el asesor H&S?','¿Qué documentación genera cada inspección?','¿Qué verifica la SRT en una inspección de empresa?'],
+      capacitacion:['¿Qué exige la Ley 24.557 en capacitación?','¿Puede haber responsabilidad sin registro firmado de capacitación?','Frecuencia mínima legal de capacitaciones en manufactura'],
+      nte:['¿Qué pasa si la NTE no está actualizada?','¿Quién firma la NTE y qué responsabilidad implica?','Obligatoriedad de exámenes médicos periódicos (Dec. 1338/96)'],
+      indicadores:['¿Cómo se calcula el índice de frecuencia (IF)?','Fórmula del índice de gravedad (IG) e incidencia (IA)','¿Qué meta anual de IF es razonable para manufactura?','¿Cómo comparo mi siniestralidad con el promedio sectorial?'],
+      legal:['Ley 19.587 – resumen obligaciones del empleador','Decreto 351/79 – principales requisitos técnicos','¿Qué es el Plan de Mejoramiento y cuándo es obligatorio?','Decreto 1338/96 – horas mínimas del servicio de H&S'],
+      glosario:['¿Qué es el RIPTE y para qué se usa?','¿Qué es el ingreso base en la LRT?','Diferencia entre ART y SRT','¿Qué es la alícuota ART y cómo se determina?','¿Qué es la ILP parcial vs total?']
+    }
+  },
+  r: {
+    id:'r', label:'Responsable', short:'R',
+    chip_bg:'#0d2818', chip_color:'#3fb950',
+    bub_bg:'#0d1a0d', bub_color:'#aff5b4', bub_border:'#23863655',
+    av_bg:'#0d2818', av_color:'#3fb950',
+    system:`Sos un asistente experto en Higiene y Seguridad en el Trabajo para empresas industriales argentinas. Estás respondiendo a un RESPONSABLE o COORDINADOR de H&S. Tu enfoque es operativo y de gestión.
+
+Podés ayudar con:
+- Procedimientos paso a paso (inspecciones, capacitaciones, manejo de accidentes)
+- Gestión de documentación de H&S (actas, registros, programas)
+- Trámites con la ART: denuncia de accidentes, reintegro ILT, NTE
+- Interpretación de normas (Ley 24.557, Ley 19.587, Decreto 351/79, Decreto 1338/96)
+- Indicadores de siniestralidad y reportes a gerencia
+
+ART: Federación Patronal Seguros S.A.
+- Emergencias: 0-800-222-2322 (24hs)
+- Portal SELF: www.fedpat.com.ar → Portal ART → SELF
+- Reintegro ILT: DINERARIAS → Siniestros/Gestión ILT
+- NTE: EXÁMENES PERIÓDICOS → Nóminas de Trabajadores Expuestos
+- Consultas: 0800-222-3535
+
+DATOS CLAVE:
+- Los primeros 10 días de ILT son a cargo del empleador (Art. 13 LRT) → se recuperan por reintegro
+- Denuncia a la ART: dentro de las 24 horas del accidente (Art. 43 LRT)
+- La información guardada en la NTE sin confirmar vence a los 7 días corridos
+- Documentos para reintegro: recibos de haberes + AFIP 931 digitalizados
+
+Respondé en español rioplatense. Explicá procedimientos en pasos numerados cuando corresponda. Usá lenguaje técnico-práctico claro.`,
+    chips: {
+      general:['¿Qué documentación mínima exige el sistema de H&S?','¿Cuáles son las obligaciones del asesor H&S?','¿Qué debe tener el Programa Anual de H&S?','Checklist de cumplimiento normativo para manufactura'],
+      accidente:['Protocolo completo ante un accidente laboral','¿Cómo investigar un accidente (causas raíz)?','¿Qué datos recojo en la notificación interna?','¿Cómo denuncio el accidente en portal SELF?','¿Qué documentación archivo post-accidente?'],
+      reintegro:['Pasos para pedir el reintegro ILT en SELF','Documentos obligatorios para el reintegro','¿Qué hago si el trámite aparece como DEVUELTO?','¿Cómo consulto el estado del reintegro?','¿Dónde veo los pagos emitidos y descargo el Excel?'],
+      epp:['EPP obligatorio por puesto en manufactura (Decreto 351/79)','¿Cómo registro la entrega de EPP con firma?','¿Con qué frecuencia reponer y controlar el EPP?','¿Cómo gestiono el EPP de un contratista?'],
+      inspeccion:['¿Qué debe incluir un acta de inspección periódica?','Frecuencia mínima de inspecciones por área','¿Cómo gestiono una no conformidad detectada?','¿Qué verifica el asesor H&S en cada visita?','Lista de verificación de maquinaria (Decreto 351/79)'],
+      capacitacion:['¿Cómo registro correctamente una capacitación?','Contenido mínimo de la inducción de ingresantes','¿Qué temas son obligatorios en manufactura?','¿Cómo evalúo la efectividad de una capacitación?'],
+      nte:['Pasos para cargar la NTE en portal SELF','¿Qué es un agente de riesgo y cómo se codifica?','¿Cómo cargo la NTE por archivo Excel?','¿Qué pasa si la NTE vence sin confirmar (7 días)?','Código 00000 para trabajadores sin exposición'],
+      indicadores:['¿Cómo calculo el índice de frecuencia (IF)?','¿Cómo armo el registro anual de siniestralidad?','¿Qué meta de IF es razonable para manufactura?','¿Cómo presento los indicadores a gerencia?'],
+      legal:['Ley 24.557 – obligaciones del empleador (Art. 31)','Decreto 1338/96 – horas mínimas del asesor H&S','¿Qué es el Plan de Mejoramiento y cómo se gestiona?','Decreto 351/79 – maquinaria, EPP e instalaciones'],
+      glosario:['¿Qué es la ILT y cómo se gestiona?','¿Qué es la NTE y por qué es obligatoria?','¿Qué es una no conformidad en H&S?','¿Qué diferencia hay entre accidente e incidente?','¿Qué es el alta médica?']
+    }
+  },
+  c: {
+    id:'c', label:'Colaborador', short:'C',
+    chip_bg:'#1e1130', chip_color:'#d2a8ff',
+    bub_bg:'#1a1130', bub_color:'#e2c5fc', bub_border:'#a371f755',
+    av_bg:'#1e1130', av_color:'#d2a8ff',
+    system:`Sos un asistente de Higiene y Seguridad para colaboradores y trabajadores de una empresa industrial argentina.
+
+CÓMO COMUNICARTE:
+- Lenguaje simple, directo y amigable. NADA de jerga técnica ni siglas sin explicar.
+- Respuestas cortas con pasos claros (3-5 pasos máximo cuando sea posible).
+- Siempre tranquilizador y orientado a la acción.
+- Priorizá la seguridad y los derechos del trabajador.
+
+TUS TEMAS PRINCIPALES:
+- Qué hacer si me lastimo en el trabajo o veo algo peligroso
+- Cómo usar correctamente el equipo de protección (EPP)
+- Cuáles son mis derechos como trabajador ante un accidente
+- Si cobro mientras estoy de baja
+- A quién avisar ante emergencias
+
+ART: Federación Patronal
+- Si hay un accidente urgente: llamá al 0-800-222-2322 (gratuito, 24hs)
+- Siempre avisarle primero al supervisor
+
+MENSAJE CLAVE PARA ACCIDENTES:
+1. Avisá a tu supervisor
+2. Llamá al 0-800-222-2322 si es urgente
+3. Andá al médico de la ART (no a cualquier médico)
+4. No hagas nada que empeore la lesión
+
+Durante la baja médica por accidente laboral, seguís cobrando. Los primeros 10 días los paga la empresa, del día 11 en adelante los paga la ART.
+
+Respondé en español rioplatense simple. Si usás una sigla, explicala.`,
+    chips: {
+      general:['¿Qué hago si veo algo peligroso?','¿Cuáles son mis derechos en H&S?','¿A quién le aviso si hay un riesgo?','¿Para qué sirve la ART?','¿Qué cubre la ART si me lastimo?'],
+      accidente:['Me lastimé en el trabajo, ¿qué hago ahora?','¿Qué es el accidente in itinere (camino al trabajo)?','¿Cobro sueldo si estoy de baja por un accidente?','¿Tengo que ir sí o sí al médico de la ART?','¿Puedo volver a trabajar antes del alta médica?'],
+      reintegro:['¿Cobro mientras estoy de baja?','¿Quién me paga los primeros días de baja?','¿Qué es el alta médica?','¿Qué pasa si la ART no me atiende bien?','¿Puedo reclamar si me rechazan la cobertura?'],
+      epp:['¿Qué equipo de protección debo usar en mi trabajo?','¿Quién tiene la obligación de darme el EPP?','¿Qué hago si mi EPP está roto o me queda mal?','¿Por qué es obligatorio usar el EPP?','¿Qué pasa si tengo un accidente y no usaba EPP?'],
+      inspeccion:['¿Qué es una inspección de seguridad?','¿Qué hace el asesor de H&S cuando visita la empresa?','¿Tengo que participar en las revisiones?','¿Cada cuánto inspeccionan mi área de trabajo?'],
+      capacitacion:['¿Es obligatorio ir a las capacitaciones de seguridad?','¿Para qué sirven las capacitaciones?','¿Qué aprendo en la inducción cuando entro a trabajar?','¿Tengo que firmar algo en la capacitación?'],
+      nte:['¿Qué es el examen médico periódico?','¿Es obligatorio hacerme el examen médico?','¿Qué buscan en el examen médico laboral?','¿A qué riesgos estoy expuesto en mi puesto de trabajo?'],
+      indicadores:['¿Por qué registran todos los accidentes?','¿Qué es el índice de accidentes?','¿Para qué sirven las estadísticas de seguridad?'],
+      legal:['¿Cuáles son mis obligaciones en seguridad?','¿Puedo pararme si hay un peligro muy grave?','¿Qué derechos tengo después de un accidente laboral?','¿Qué es la SRT y para qué sirve?'],
+      glosario:['¿Qué significa EPP?','¿Qué es la ART y por qué es importante?','¿Qué es la ILT (baja médica por accidente)?','¿Qué es un accidente in itinere?','¿Qué es el alta médica?']
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   ESTADO
+═══════════════════════════════════════════════════════════════════ */
+let role = 'g';
+let topic = 'general';
+let hist = [];
+let cfg = {api:'',drive:'',sheet:'',gkey:''};
+let busy = false;
+let sidebarOpen = false;
+
+/* ═══════════════════════════════════════════════════════════════════
+   FALLBACKS (sin API key)
+═══════════════════════════════════════════════════════════════════ */
+const FB = {
+  accidente:{
+    g:`<strong>Responsabilidad del empleador ante un accidente (Ley 24.557)</strong><br><br>
+    El empleador tiene tres obligaciones inmediatas:<br>
+    1. <strong>Denuncia a la ART dentro de las 24 horas</strong> (Art. 43 LRT) — Federación Patronal: 0-800-222-2322 o portal SELF<br>
+    2. <strong>Pago del salario durante los primeros 10 días de ILT</strong> a cargo del empleador (Art. 13 LRT) — recuperable por reintegro<br>
+    3. <strong>Derivación al prestador médico habilitado</strong> por la ART<br><br>
+    Si el accidente ocurrió por incumplimiento de normas de H&S, el empleador abona un recargo al Fondo de Garantía (Art. 5 LRT). El incumplimiento reiterado puede derivar en responsabilidad penal (Art. 32: prisión de 2 a 6 años para directores y administradores).`,
+    r:`<strong>Protocolo ante accidente laboral — pasos</strong><br><br>
+    1. Primeros auxilios — no mover al accidentado salvo riesgo de vida<br>
+    2. Asegurar la zona — fotografiar, no alterar evidencia<br>
+    3. Notificación interna al responsable y RRHH (completar formulario Doc. 05)<br>
+    4. <strong>Denuncia a Federación Patronal: 0-800-222-2322 o portal SELF → Siniestros</strong><br>
+    5. Derivar al prestador médico habilitado por la ART<br>
+    6. Investigación del accidente dentro de 48-72 hs (causas inmediatas y raíz)<br>
+    7. Solicitar reintegro ILT cuando el trabajador tenga el alta médica<br><br>
+    📌 Los primeros 10 días de ILT son a cargo del empleador. Se recuperan por reintegro.`,
+    c:`<strong>Si te lastimaste en el trabajo:</strong><br><br>
+    1. Avisale a tu supervisor inmediatamente<br>
+    2. Si es urgente, llamá al <strong>0-800-222-2322</strong> (Federación Patronal, gratuito, 24hs)<br>
+    3. Andá al médico de la ART — importante: tiene que ser el prestador que te indique la ART<br>
+    4. No hagas nada que pueda empeorar la lesión<br><br>
+    Tenés derecho a recibir toda la atención médica que necesitás.<br>
+    <strong>Seguís cobrando tu sueldo</strong> durante los días que estés de baja.`
+  },
+  reintegro:{
+    g:`<strong>Reintegro ILT — gestión y recupero</strong><br><br>
+    La empresa paga los primeros 10 días de ILT al 100% del ingreso base (Art. 13 LRT). Recupera ese costo solicitando el reintegro ante Federación Patronal a través del portal SELF.<br><br>
+    Ruta en SELF: <strong>DINERARIAS → Siniestros/Gestión ILT</strong><br>
+    Documentos obligatorios: recibos de haberes + AFIP 931 digitalizados<br><br>
+    El historial de pagos en Excel está disponible en: <strong>DINERARIAS → Pagos emitidos → Informe Reintegros ILT</strong>`,
+    r:`<strong>Reintegro ILT en portal SELF — paso a paso</strong><br><br>
+    1. Ingresar a <strong>www.fedpat.com.ar → Portal ART → SELF</strong><br>
+    2. Ir a <strong>DINERARIAS → Siniestros/Gestión ILT</strong><br>
+    3. Buscar el siniestro por CUIL o número de siniestro<br>
+    4. Adjuntar: <strong>Recibos de haberes + Formulario AFIP 931</strong> (PDF o imagen)<br>
+    5. Confirmar envío y guardar el número de trámite<br><br>
+    Estados: Iniciado · Finalizado · Devuelto · Rechazado<br>
+    Si está DEVUELTO: revisar el motivo indicado por la ART, corregir documentación y reenviar.`,
+    c:`<strong>¿Cobro mientras estoy de baja por un accidente?</strong><br><br>
+    Sí. No te quedás sin ingresos:<br>
+    - Los <strong>primeros 10 días</strong>: tu empresa te paga el sueldo normalmente<br>
+    - <strong>Desde el día 11 en adelante</strong>: la ART (Federación Patronal) te paga<br><br>
+    No tenés que hacer ningún trámite vos. Tu empresa y la ART se encargan.<br>
+    Lo que sí necesitás es presentar los certificados médicos que te dé el médico de la ART.`
+  },
+  epp:{
+    g:`<strong>EPP — responsabilidad legal y riesgos</strong><br><br>
+    El Art. 75 de la LCT y el Decreto 351/79 obligan al empleador a proveer EPP adecuado y garantizar su uso efectivo. Si un accidente ocurre por falta de EPP o por no controlar su uso, la empresa puede ser sancionada con recargo (Art. 5 LRT) y expuesta a responsabilidad civil.`,
+    r:`<strong>EPP obligatorio en manufactura — Decreto 351/79</strong><br><br>
+    • Calzado de seguridad con puntera de acero (zonas con objetos pesados)<br>
+    • Casco de seguridad (riesgo de caída de objetos)<br>
+    • Protección auditiva (cuando el ruido supera 85 dB)<br>
+    • Guantes (según la tarea y el agente de riesgo)<br>
+    • Antiparras o pantalla facial (proyecciones, salpicaduras, arco eléctrico)<br>
+    • Ropa de trabajo adecuada a los riesgos del puesto<br><br>
+    📌 Registrar siempre la entrega con firma del trabajador. Sin registro, no hay evidencia.`,
+    c:`<strong>Tu equipo de protección personal (EPP)</strong><br><br>
+    Tu empresa tiene la <strong>obligación legal</strong> de darte el equipo de protección que necesitás para tu trabajo.<br><br>
+    Usarlo bien también es una obligación tuya — y es por tu propia seguridad.<br><br>
+    Si tu EPP está roto, te queda mal o necesitás reposición, pedíselo a tu supervisor. Nunca trabajes sin el equipo que corresponde — si hay un accidente sin EPP, puede afectar tu cobertura de la ART.`
+  },
+  nte:{
+    g:`<strong>NTE — obligación y responsabilidad</strong><br><br>
+    La Nómina de Trabajadores Expuestos es la declaración que la empresa hace ante la ART informando los agentes de riesgo de cada puesto. Si la NTE no está actualizada o es incorrecta, la ART puede programar exámenes inadecuados, lo que expone a la empresa ante la SRT y ante posibles reclamos de enfermedades profesionales no detectadas.`,
+    r:`<strong>Cargar la NTE en portal SELF</strong><br><br>
+    Ruta: <strong>EXÁMENES PERIÓDICOS → Nóminas de Trabajadores Expuestos (NTE)</strong><br><br>
+    Opciones: Por archivo Excel (recomendado para muchos trabajadores) o carga manual.<br><br>
+    ⚠ <strong>Importante:</strong> la información guardada sin confirmar vence a los 7 días corridos automáticamente. Siempre terminar con el botón CONFIRMAR para obtener el PDF con sello de recepción.<br><br>
+    Para trabajadores sin exposición: usar código <strong>00000</strong> en el campo Agentes de Riesgo.`,
+    c:`<strong>El examen médico laboral</strong><br><br>
+    La empresa tiene que hacerte exámenes médicos periódicos según los riesgos de tu trabajo. Son completamente gratuitos para vos.<br><br>
+    Son obligatorios — no hacerlos puede perjudicarte si después desarrollás algún problema de salud relacionado con tu trabajo.<br><br>
+    La ART (Federación Patronal) coordina cuándo y dónde hacer el examen, y te avisará cuando corresponda.`
+  },
+  default:{
+    g:`Soy el <strong>Bot de H&S</strong> configurado para el perfil <strong>Gerente</strong>. Puedo orientarte sobre responsabilidad legal, gestión del sistema de H&S, indicadores de siniestralidad, costos y obligaciones ante la SRT y Federación Patronal ART.<br><br>Usá el menú lateral para explorar temas o los chips de sugerencias para empezar.<br><br>Para activar respuestas con IA en tiempo real, ingresá tu API Key de Anthropic en <strong>⚙ Config</strong>.`,
+    r:`Soy el <strong>Bot de H&S</strong> configurado para el perfil <strong>Responsable/Coordinador</strong>. Puedo ayudarte con procedimientos, inspecciones, capacitaciones, reintegros ILT, carga de la NTE y toda la documentación del sistema.<br><br>Usá el menú lateral para explorar temas o los chips de sugerencias para empezar.<br><br>Para activar respuestas con IA en tiempo real, ingresá tu API Key de Anthropic en <strong>⚙ Config</strong>.`,
+    c:`Hola! Soy el <strong>bot de seguridad</strong> de tu empresa. Estoy acá para ayudarte con cualquier duda sobre seguridad en el trabajo.<br><br>Podés preguntarme sobre:<br>• Qué hacer si te lastimás o ves algo peligroso<br>• Cómo usar tu equipo de protección<br>• Cuáles son tus derechos si tenés un accidente<br>• Si vas a cobrar mientras estás de baja<br><br>¿En qué te puedo ayudar hoy?`
+  }
+};
+
+function getFallback(text) {
+  const t = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(t.match(/accidente|lesion|lastim|herida|caida|golpe|duele|duelo|emergency/)) return FB.accidente[role]||FB.accidente.r;
+  if(t.match(/reintegro|ilt|self|portal|baja|cobr|sueldo|pago|devuelto|primer[o]? ?dia/)) return FB.reintegro[role]||FB.reintegro.r;
+  if(t.match(/epp|casco|guante|protec|calzado|antipar|ropa|equipo/)) return FB.epp[role]||FB.epp.r;
+  if(t.match(/nte|nomina|examen|periodico|medico|riesgo.*puesto|agente/)) return FB.nte[role]||FB.nte.r;
+  return FB.default[role]||FB.default.r;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DOM HELPERS
+═══════════════════════════════════════════════════════════════════ */
+function now(){ return new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); }
+
+function hideWelcome(){
+  const w=document.getElementById('welcome');
+  if(w) w.style.display='none';
+}
+
+function addBot(html){
+  hideWelcome();
+  const mc=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.className='msg bot';
+  d.innerHTML=`<div class="m-av" style="background:#1c2951;color:#58a6ff;border:1px solid #1c6ef355">⛑</div><div><div class="m-bub bub-bot" style="background:#161b22;border-color:#21262d;color:#c9d1d9">${html}</div><div class="m-time">${now()}</div></div>`;
+  mc.appendChild(d);
+  mc.scrollTop=mc.scrollHeight;
+}
+
+function addUser(text){
+  hideWelcome();
+  const r=ROLES[role];
+  const mc=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.className='msg user';
+  d.innerHTML=`<div class="m-av" style="background:${r.av_bg};color:${r.av_color};border:1px solid ${r.av_color}44">${r.short}</div><div><div class="m-bub bub-user" style="background:${r.bub_bg};color:${r.bub_color};border-color:${r.bub_border}">${text}</div><div class="m-time right">${now()}</div></div>`;
+  mc.appendChild(d);
+  mc.scrollTop=mc.scrollHeight;
+}
+
+function showTyping(){
+  const mc=document.getElementById('messages');
+  const d=document.createElement('div');
+  d.className='msg bot'; d.id='typing';
+  d.innerHTML=`<div class="m-av" style="background:#1c2951;color:#58a6ff;border:1px solid #1c6ef355">⛑</div><div><div class="m-bub bub-bot typing-bub" style="background:#161b22;border-color:#21262d"><span class="td"></span><span class="td"></span><span class="td"></span></div></div>`;
+  mc.appendChild(d);
+  mc.scrollTop=mc.scrollHeight;
+}
+function rmTyping(){ const t=document.getElementById('typing'); if(t)t.remove(); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   API CALL
+═══════════════════════════════════════════════════════════════════ */
+async function callClaude(text){
+  if(!cfg.api) return null;
+  let sys = ROLES[role].system;
+  if(cfg.drive) sys+=`\n\nEl empleador tiene documentos de H&S disponibles en Google Drive (ID carpeta: ${cfg.drive}). Si la consulta se relaciona con documentos específicos, mencioná que están disponibles en el sistema.`;
+  if(cfg.sheet) sys+=`\n\nHay una base de conocimiento actualizable en Google Sheets (ID: ${cfg.sheet}) con preguntas frecuentes que el equipo puede actualizar.`;
+  hist.push({role:'user',content:text});
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:hist.slice(-16)})
+    });
+    const data=await res.json();
+    if(data.content&&data.content[0]){
+      const reply=data.content[0].text;
+      hist.push({role:'assistant',content:reply});
+      return reply
+        .replace(/\n\n/g,'<br><br>')
+        .replace(/\n/g,'<br>')
+        .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g,'<em>$1</em>');
+    }
+    return null;
+  }catch(e){console.error(e);return null;}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SEND
+═══════════════════════════════════════════════════════════════════ */
+async function doSend(){
+  if(busy) return;
+  const inp=document.getElementById('inp');
+  const text=inp.value.trim();
+  if(!text) return;
+  inp.value=''; inp.style.height='42px';
+  if(window.innerWidth<=680) closeSidebar();
+  addUser(text);
+  busy=true; showTyping();
+  let reply=await callClaude(text);
+  rmTyping(); busy=false;
+  if(!reply) reply=getFallback(text);
+  addBot(reply);
+}
+
+function sendChip(el){ document.getElementById('inp').value=el.innerText; doSend(); }
+function handleKey(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doSend();} }
+function autoResize(el){ el.style.height='42px'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   ROLES & TOPICS
+═══════════════════════════════════════════════════════════════════ */
+function setRole(r){
+  role=r; hist=[];
+  ['g','r','c'].forEach(x=>{
+    const b=document.getElementById('btn-'+x);
+    b.classList.remove('on');
+    b.style.setProperty('--rc', x==='g'?'#1c6ef3':x==='r'?'#238636':'#a371f7');
+    b.style.setProperty('--rb', x==='g'?'#1c2951':x==='r'?'#0d2818':'#1e1130');
+  });
+  document.getElementById('btn-'+r).classList.add('on');
+  const R=ROLES[r];
+  const chip=document.getElementById('role-chip');
+  chip.textContent=R.label;
+  chip.style.background=R.chip_bg; chip.style.color=R.chip_color;
+  updateChips();
+  const mc=document.getElementById('messages');
+  mc.innerHTML='';
+  const w=document.createElement('div');
+  w.className='welcome'; w.id='welcome';
+  w.innerHTML=`<span class="w-shield">⛑</span><div class="w-title">Bot de Higiene y Seguridad</div><div class="w-sub">${R.label === 'Colaborador' ? 'Tu asistente de seguridad. Preguntame sobre tu protección, qué hacer ante accidentes y tus derechos.' : 'Consultas sobre normativa, accidentes, EPP, reintegros ILT y gestión de H&S.'}</div><div class="w-caps"><span class="w-cap">Ley 24.557</span><span class="w-cap">Dec. 351/79</span><span class="w-cap">Federación Patronal</span></div>`;
+  mc.appendChild(w);
+}
+
+function setTopic(el,t){
+  topic=t;
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
+  el.classList.add('on');
+  updateChips();
+}
+
+function updateChips(){
+  const R=ROLES[role];
+  const list=(R.chips&&R.chips[topic])||R.chips.general||[];
+  document.getElementById('chips').innerHTML=list.map(c=>`<span class="chip" onclick="sendChip(this)">${c}</span>`).join('');
+}
+
+function clearChat(){
+  hist=[];
+  setRole(role);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CONFIG MODAL
+═══════════════════════════════════════════════════════════════════ */
+function showModal(){ document.getElementById('modal').style.display='flex'; loadConfigUI(); }
+function closeModal(){ document.getElementById('modal').style.display='none'; }
+function overlayClose(e){ if(e.target===e.currentTarget) closeModal(); }
+
+function loadConfigUI(){
+  document.getElementById('cf-api').value=cfg.api||'';
+  document.getElementById('cf-drive').value=cfg.drive||'';
+  document.getElementById('cf-sheet').value=cfg.sheet||'';
+  document.getElementById('cf-gkey').value=cfg.gkey||'';
+}
+
+function saveConfig(){
+  cfg.api=document.getElementById('cf-api').value.trim();
+  cfg.drive=document.getElementById('cf-drive').value.trim();
+  cfg.sheet=document.getElementById('cf-sheet').value.trim();
+  cfg.gkey=document.getElementById('cf-gkey').value.trim();
+  try{ localStorage.setItem('hs_bot_cfg', JSON.stringify(cfg)); }catch(e){}
+  const td=document.getElementById('tag-drive');
+  const ts=document.getElementById('tag-sheet');
+  td.textContent=cfg.drive?'conectado':'pendiente'; td.className='src-tag '+(cfg.drive?'t-ok':'t-pend');
+  ts.textContent=cfg.sheet?'conectado':'pendiente'; ts.className='src-tag '+(cfg.sheet?'t-ok':'t-pend');
+  closeModal();
+  if(cfg.api) addBot(`Configuración guardada. La IA de Claude está activa para el perfil <strong>${ROLES[role].label}</strong>. Podés hacer consultas en tiempo real.`);
+  else addBot(`Configuración guardada. Para activar respuestas con IA en tiempo real, agregá tu <strong>API Key de Anthropic</strong> en ⚙ Config.`);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SIDEBAR MOBILE
+═══════════════════════════════════════════════════════════════════ */
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  sidebarOpen=!sidebarOpen;
+  sb.classList.toggle('open',sidebarOpen);
+}
+function closeSidebar(){
+  sidebarOpen=false;
+  document.getElementById('sidebar').classList.remove('open');
+}
+document.addEventListener('click',e=>{
+  const sb=document.getElementById('sidebar');
+  const hb=document.querySelector('.hamburger');
+  if(window.innerWidth<=680&&sidebarOpen&&!sb.contains(e.target)&&!hb.contains(e.target)) closeSidebar();
+});
+
+/* ═══════════════════════════════════════════════════════════════════
+   WHATSAPP
+═══════════════════════════════════════════════════════════════════ */
+function shareWA(){
+  const url=window.location.href;
+  const msg=encodeURIComponent(`Hola! Te comparto el Bot de H&S de la empresa para consultas sobre higiene y seguridad en el trabajo: ${url}`);
+  window.open('https://wa.me/?text='+msg,'_blank');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════════ */
+(function init(){
+  try{ const s=localStorage.getItem('hs_bot_cfg'); if(s){ cfg=JSON.parse(s); if(cfg.drive){document.getElementById('tag-drive').textContent='conectado';document.getElementById('tag-drive').className='src-tag t-ok';} if(cfg.sheet){document.getElementById('tag-sheet').textContent='conectado';document.getElementById('tag-sheet').className='src-tag t-ok';} } }catch(e){}
+  setRole('g');
+  updateChips();
+})();
+</script>
+</body>
+</html>

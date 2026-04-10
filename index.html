@@ -173,8 +173,8 @@ html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;background:#0d1117;
         <div><div class="rb-name">Gerente</div><div class="rb-sub">Estratégico / legal</div></div>
       </button>
       <button class="role-btn" id="btn-r" onclick="setRole('r')" style="--rc:#238636;--rb:#0d2818">
-        <div class="rb-icon" style="background:#0d2818;color:#3fb950">R</div>
-        <div><div class="rb-name">Responsable</div><div class="rb-sub">Coordinador H&S</div></div>
+        <div class="rb-icon" style="background:#0d2818;color:#3fb950">S</div>
+        <div><div class="rb-name">Coord. / Supervisor</div><div class="rb-sub">Personal a cargo</div></div>
       </button>
       <button class="role-btn" id="btn-c" onclick="setRole('c')" style="--rc:#a371f7;--rb:#1e1130">
         <div class="rb-icon" style="background:#1e1130;color:#a371f7">C</div>
@@ -330,18 +330,20 @@ Respondé siempre en español rioplatense. Usá lenguaje profesional ejecutivo. 
     }
   },
   r: {
-    id:'r', label:'Responsable', short:'R',
+    id:'r', label:'Coord./Supervisor', short:'S',
     chip_bg:'#0d2818', chip_color:'#3fb950',
     bub_bg:'#0d1a0d', bub_color:'#aff5b4', bub_border:'#23863655',
     av_bg:'#0d2818', av_color:'#3fb950',
-    system:`Sos un asistente experto en Higiene y Seguridad en el Trabajo para empresas industriales argentinas. Estás respondiendo a un RESPONSABLE o COORDINADOR de H&S. Tu enfoque es operativo y de gestión.
+    system:`Sos un asistente experto en Higiene y Seguridad en el Trabajo para empresas industriales argentinas. Estás respondiendo a un COORDINADOR o SUPERVISOR que tiene colaboradores a cargo. Tu enfoque es operativo: gestión del equipo, cumplimiento normativo en el piso, y comunicación entre gerencia y colaboradores.
 
 Podés ayudar con:
-- Procedimientos paso a paso (inspecciones, capacitaciones, manejo de accidentes)
-- Gestión de documentación de H&S (actas, registros, programas)
-- Trámites con la ART: denuncia de accidentes, reintegro ILT, NTE
-- Interpretación de normas (Ley 24.557, Ley 19.587, Decreto 351/79, Decreto 1338/96)
-- Indicadores de siniestralidad y reportes a gerencia
+- Qué hacer ante un accidente de un colaborador a cargo (protocolo, denuncia, seguimiento)
+- Cómo gestionar el EPP del equipo (entrega, control, reposición y registro)
+- Cómo detectar y reportar condiciones inseguras en el sector
+- Cómo llevar los registros de capacitaciones, inspecciones y no conformidades
+- Cómo comunicarle a gerencia los problemas de H&S del área
+- Trámites con la ART y documentación de H&S
+- Interpretación de normas aplicadas al día a día del sector (Ley 24.557, Decreto 351/79)
 
 ART: Federación Patronal Seguros S.A.
 - Emergencias: 0-800-222-2322 (24hs)
@@ -358,12 +360,12 @@ DATOS CLAVE:
 
 Respondé en español rioplatense. Explicá procedimientos en pasos numerados cuando corresponda. Usá lenguaje técnico-práctico claro.`,
     chips: {
-      general:['¿Qué documentación mínima exige el sistema de H&S?','¿Cuáles son las obligaciones del asesor H&S?','¿Qué debe tener el Programa Anual de H&S?','Checklist de cumplimiento normativo para manufactura'],
-      accidente:['Protocolo completo ante un accidente laboral','¿Cómo investigar un accidente (causas raíz)?','¿Qué datos recojo en la notificación interna?','¿Cómo denuncio el accidente en portal SELF?','¿Qué documentación archivo post-accidente?'],
+      general:['¿Cuáles son mis obligaciones como supervisor en H&S?','¿Qué hago si un colaborador se niega a usar el EPP?','¿Cómo reporto una condición insegura a gerencia?','¿Qué registros debo llevar como supervisor?','¿Cuándo debo involucrar al asesor H&S?'],
+      accidente:['Uno de mis colaboradores se lastimó, ¿qué hago primero?','¿Qué datos tengo que recabar del accidente en el momento?','¿Cómo hago la notificación interna?','¿Tengo que acompañar al trabajador al médico de la ART?','¿Cómo investigo el accidente de mi equipo?'],
       reintegro:['Pasos para pedir el reintegro ILT en SELF','Documentos obligatorios para el reintegro','¿Qué hago si el trámite aparece como DEVUELTO?','¿Cómo consulto el estado del reintegro?','¿Dónde veo los pagos emitidos y descargo el Excel?'],
-      epp:['EPP obligatorio por puesto en manufactura (Decreto 351/79)','¿Cómo registro la entrega de EPP con firma?','¿Con qué frecuencia reponer y controlar el EPP?','¿Cómo gestiono el EPP de un contratista?'],
-      inspeccion:['¿Qué debe incluir un acta de inspección periódica?','Frecuencia mínima de inspecciones por área','¿Cómo gestiono una no conformidad detectada?','¿Qué verifica el asesor H&S en cada visita?','Lista de verificación de maquinaria (Decreto 351/79)'],
-      capacitacion:['¿Cómo registro correctamente una capacitación?','Contenido mínimo de la inducción de ingresantes','¿Qué temas son obligatorios en manufactura?','¿Cómo evalúo la efectividad de una capacitación?'],
+      epp:['¿Cómo controlo que mis colaboradores usen el EPP?','¿Cómo registro la entrega de EPP con firma?','Un colaborador perdió su EPP, ¿qué hago?','¿Con qué frecuencia reponer y controlar el EPP?','¿Cómo gestiono el EPP de un contratista en mi sector?'],
+      inspeccion:['¿Qué tengo que revisar en mi sector antes de cada turno?','Encontré algo peligroso en el área, ¿qué hago?','¿Cómo reporto una no conformidad al asesor H&S?','¿Qué tengo que tener listo cuando viene el asesor H&S?','Lista de verificación de maquinaria para supervisores'],
+      capacitacion:['Ingresó un colaborador nuevo, ¿qué inducción tiene que recibir?','¿Cómo me aseguro de que mis colaboradores firmen el registro?','¿Qué hago si un colaborador falta a la capacitación obligatoria?','¿Cómo verifico que mi equipo aplicó lo aprendido?','¿Con qué frecuencia tengo que capacitar a mi equipo?'],
       nte:['Pasos para cargar la NTE en portal SELF','¿Qué es un agente de riesgo y cómo se codifica?','¿Cómo cargo la NTE por archivo Excel?','¿Qué pasa si la NTE vence sin confirmar (7 días)?','Código 00000 para trabajadores sin exposición'],
       indicadores:['¿Cómo calculo el índice de frecuencia (IF)?','¿Cómo armo el registro anual de siniestralidad?','¿Qué meta de IF es razonable para manufactura?','¿Cómo presento los indicadores a gerencia?'],
       legal:['Ley 24.557 – obligaciones del empleador (Art. 31)','Decreto 1338/96 – horas mínimas del asesor H&S','¿Qué es el Plan de Mejoramiento y cómo se gestiona?','Decreto 351/79 – maquinaria, EPP e instalaciones'],
@@ -439,15 +441,15 @@ const FB = {
     2. <strong>Pago del salario durante los primeros 10 días de ILT</strong> a cargo del empleador (Art. 13 LRT) — recuperable por reintegro<br>
     3. <strong>Derivación al prestador médico habilitado</strong> por la ART<br><br>
     Si el accidente ocurrió por incumplimiento de normas de H&S, el empleador abona un recargo al Fondo de Garantía (Art. 5 LRT). El incumplimiento reiterado puede derivar en responsabilidad penal (Art. 32: prisión de 2 a 6 años para directores y administradores).`,
-    r:`<strong>Protocolo ante accidente laboral — pasos</strong><br><br>
-    1. Primeros auxilios — no mover al accidentado salvo riesgo de vida<br>
-    2. Asegurar la zona — fotografiar, no alterar evidencia<br>
-    3. Notificación interna al responsable y RRHH (completar formulario Doc. 05)<br>
-    4. <strong>Denuncia a Federación Patronal: 0-800-222-2322 o portal SELF → Siniestros</strong><br>
-    5. Derivar al prestador médico habilitado por la ART<br>
-    6. Investigación del accidente dentro de 48-72 hs (causas inmediatas y raíz)<br>
-    7. Solicitar reintegro ILT cuando el trabajador tenga el alta médica<br><br>
-    📌 Los primeros 10 días de ILT son a cargo del empleador. Se recuperan por reintegro.`,
+    r:`<strong>Uno de tus colaboradores se lastimó — qué hacer</strong><br><br>
+    1. <strong>Primeros auxilios</strong> — no moverlo salvo peligro inminente. Si es grave: llamar al 107/911<br>
+    2. <strong>Asegurar la zona</strong> — acordonar el área, no limpiar ni alterar nada, sacar fotos<br>
+    3. <strong>Notificá de inmediato</strong> a tu jefe directo y a RRHH — completar el formulario interno<br>
+    4. <strong>Denuncia a la ART dentro de 24 hs:</strong> 0-800-222-2322 o portal SELF → Siniestros<br>
+    5. <strong>Acompañar al trabajador</strong> o asegurarse de que vaya al prestador médico de la ART<br>
+    6. <strong>Investigar el accidente</strong> en 48-72 hs junto con el asesor H&S<br>
+    7. Registrar en la planilla de siniestralidad y comunicar las causas a gerencia<br><br>
+    📌 Como supervisor tenés responsabilidad directa en el primer eslabón del protocolo.`,
     c:`<strong>Si te lastimaste en el trabajo:</strong><br><br>
     1. Avisale a tu supervisor inmediatamente<br>
     2. Si es urgente, llamá al <strong>0-800-222-2322</strong> (Federación Patronal, gratuito, 24hs)<br>
@@ -480,14 +482,16 @@ const FB = {
   epp:{
     g:`<strong>EPP — responsabilidad legal y riesgos</strong><br><br>
     El Art. 75 de la LCT y el Decreto 351/79 obligan al empleador a proveer EPP adecuado y garantizar su uso efectivo. Si un accidente ocurre por falta de EPP o por no controlar su uso, la empresa puede ser sancionada con recargo (Art. 5 LRT) y expuesta a responsabilidad civil.`,
-    r:`<strong>EPP obligatorio en manufactura — Decreto 351/79</strong><br><br>
-    • Calzado de seguridad con puntera de acero (zonas con objetos pesados)<br>
-    • Casco de seguridad (riesgo de caída de objetos)<br>
-    • Protección auditiva (cuando el ruido supera 85 dB)<br>
-    • Guantes (según la tarea y el agente de riesgo)<br>
-    • Antiparras o pantalla facial (proyecciones, salpicaduras, arco eléctrico)<br>
-    • Ropa de trabajo adecuada a los riesgos del puesto<br><br>
-    📌 Registrar siempre la entrega con firma del trabajador. Sin registro, no hay evidencia.`,
+    r:`<strong>Control de EPP en tu equipo</strong><br><br>
+    EPP mínimo que debe tener cada colaborador en manufactura (Decreto 351/79):<br>
+    • Calzado con puntera de acero · Casco · Protección auditiva (si hay ruido +85 dB)<br>
+    • Guantes según la tarea · Antiparras si hay proyecciones · Ropa de trabajo<br><br>
+    <strong>Tu responsabilidad como supervisor:</strong><br>
+    • Verificar que cada colaborador use su EPP antes de empezar la tarea<br>
+    • Registrar la entrega con firma (sin eso no hay evidencia legal)<br>
+    • Reponer inmediatamente si está roto o deteriorado<br>
+    • Reportar si alguien se niega a usarlo — no ignorarlo<br><br>
+    📌 Si hay un accidente y el colaborador no usaba el EPP que vos tenías que controlar, la responsabilidad puede subir hasta el supervisor.`,
     c:`<strong>Tu equipo de protección personal (EPP)</strong><br><br>
     Tu empresa tiene la <strong>obligación legal</strong> de darte el equipo de protección que necesitás para tu trabajo.<br><br>
     Usarlo bien también es una obligación tuya — y es por tu propia seguridad.<br><br>
@@ -508,7 +512,7 @@ const FB = {
   },
   default:{
     g:`Soy el <strong>Bot de H&S</strong> configurado para el perfil <strong>Gerente</strong>. Puedo orientarte sobre responsabilidad legal, gestión del sistema de H&S, indicadores de siniestralidad, costos y obligaciones ante la SRT y Federación Patronal ART.<br><br>Usá el menú lateral para explorar temas o los chips de sugerencias para empezar.<br><br>Para activar respuestas con IA en tiempo real, ingresá tu API Key de Anthropic en <strong>⚙ Config</strong>.`,
-    r:`Soy el <strong>Bot de H&S</strong> configurado para el perfil <strong>Responsable/Coordinador</strong>. Puedo ayudarte con procedimientos, inspecciones, capacitaciones, reintegros ILT, carga de la NTE y toda la documentación del sistema.<br><br>Usá el menú lateral para explorar temas o los chips de sugerencias para empezar.<br><br>Para activar respuestas con IA en tiempo real, ingresá tu API Key de Anthropic en <strong>⚙ Config</strong>.`,
+    r:`Hola! Soy el <strong>Bot de H&S</strong> para <strong>Coordinadores y Supervisores</strong>. Estoy acá para ayudarte a gestionar la seguridad de tu equipo: qué hacer cuando un colaborador tiene un accidente, cómo controlar el EPP, cómo reportar condiciones inseguras y cómo llevar los registros que te piden.<br><br>Usá el menú lateral o los chips para empezar.<br><br>Para activar respuestas con IA en tiempo real, ingresá tu API Key de Anthropic en <strong>⚙ Config</strong>.`,
     c:`Hola! Soy el <strong>bot de seguridad</strong> de tu empresa. Estoy acá para ayudarte con cualquier duda sobre seguridad en el trabajo.<br><br>Podés preguntarme sobre:<br>• Qué hacer si te lastimás o ves algo peligroso<br>• Cómo usar tu equipo de protección<br>• Cuáles son tus derechos si tenés un accidente<br>• Si vas a cobrar mientras estás de baja<br><br>¿En qué te puedo ayudar hoy?`
   }
 };
@@ -635,7 +639,7 @@ function setRole(r){
   mc.innerHTML='';
   const w=document.createElement('div');
   w.className='welcome'; w.id='welcome';
-  w.innerHTML=`<span class="w-shield">⛑</span><div class="w-title">Bot de Higiene y Seguridad</div><div class="w-sub">${R.label === 'Colaborador' ? 'Tu asistente de seguridad. Preguntame sobre tu protección, qué hacer ante accidentes y tus derechos.' : 'Consultas sobre normativa, accidentes, EPP, reintegros ILT y gestión de H&S.'}</div><div class="w-caps"><span class="w-cap">Ley 24.557</span><span class="w-cap">Dec. 351/79</span><span class="w-cap">Federación Patronal</span></div>`;
+  w.innerHTML=`<span class="w-shield">⛑</span><div class="w-title">Bot de Higiene y Seguridad</div><div class="w-sub">${R.label === 'Colaborador' ? 'Tu asistente de seguridad. Preguntame sobre tu protección, qué hacer ante accidentes y tus derechos.' : R.label === 'Coord./Supervisor' ? 'Tu asistente para gestionar la seguridad de tu equipo. Accidentes, EPP, inspecciones y reportes.' : 'Consultas sobre normativa, indicadores, gestión H&S y obligaciones legales.'}</div><div class="w-caps"><span class="w-cap">Ley 24.557</span><span class="w-cap">Dec. 351/79</span><span class="w-cap">Federación Patronal</span></div>`;
   mc.appendChild(w);
 }
 
